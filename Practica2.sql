@@ -1,4 +1,3 @@
-
 SELECT *
 FROM question q
 WHERE q.is_solved=FALSE;
@@ -102,4 +101,47 @@ GROUP BY f.Name
 HAVING COUNT(*) >= 3; 
 
 
--- 12 Retorna amb el país i any els equips nacionals amb el nom i cognom del seu entrenador. Fes-ho pels anys del 2010 al 2015 i pels països que comencin per A. Quants entrenadors retorna la consulta?
+-- 12 Retorna amb el país i any els equips nacionals amb el nom i cognom del seu entrenador. Fes-ho pels anys del 2010 al 2015 i pels països que comencin per A. Quants entrenadors retorna la consulta? Resultado 6 
+
+
+SELECT COUNT(*)
+FROM nationalteam AS nt
+JOIN headcoach AS h ON h.IDCard = nt.IDCardHeadCoach 
+JOIN person AS p ON p.IDCard = h.IDCard 
+WHERE nt.Year BETWEEN 2010 AND 2015 AND nt.country LIKE 'A%';
+
+
+-- 14  Retorna cada arena amb la seva capacitat, juntament amb el nombre de seients que tenen. Quants seients té el Footprint Center?
+
+SELECT a.Name, a.capacity, COUNT(*)
+FROM arena AS a 
+JOIN zone AS z ON z.ArenaName = a.Name
+JOIN seat AS s ON s.ArenaName = z.ArenaName AND s.ZoneCode = z.Code
+WHERE a.Name = "Footprint Center"
+GROUP BY a.Name;
+
+
+
+-- 17 Volem saber quantes franquícies hi ha per a cada conferència. Mostra totes les dades relacionades amb la conferència i un nou camp amb el recompte. Quantes franquícies hi ha acada conferència?
+
+
+SELECT c.*, COUNT(*) AS recuento
+FROM franchise AS f
+JOIN conference AS c ON f.ConferenceName = c.name
+GROUP BY c.name; 
+
+
+
+
+
+-- 18 Sabent que molts jugadors han estat seleccionats en algun moment per les seves seleccions, retorna tots els jugadors que han estat seleccionats en l'any 2010. Inclou IDCard, Nom, Cognom, Nacionalitat, Any de selecció, en aquell mateix any i el número de samarreta en la selecció. Ordena el resultat pel numero de samarreta. Quina es al nacionalitat del primer resultat que apareix?
+
+
+
+SELECT p.IDCard, p.name, p.surname, p.Nationality, dpf.DraftYear, ntp.ShirtNumber
+FROM person AS p 
+JOIN player AS pl ON pl.IDCard = p.IDCard 
+JOIN nationalteam_player AS ntp ON ntp.IDCard = pl.IDCard
+WHERE ntp.Year = 2010
+ORDER BY ntp.ShirtNumber ASC; 
+
