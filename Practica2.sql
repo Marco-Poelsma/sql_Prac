@@ -191,6 +191,17 @@ FROM headcoach AS h
 JOIN person AS p ON h.IDCard = p.IDCard
 WHERE h.Salary > (SELECT MAX(pf.Salary) FROM player_franchise AS pf);
 
+-- 24 Omple la columna NBARings de la taula de Franquícies. Aquest camp es pot calcular mitjançant la taula Franchise_Season contant quantes vegades han guanyat. Utilitza una declaració UPDATE. Un cop ho tingueu, trobeu quantes franquícies tenen 4 o més anells.
+UPDATE franchise AS f
+SET NBARings = (
+    SELECT COUNT(*)
+    FROM franchise_season AS fs
+    WHERE fs.FranchiseName = f.Name AND fs.IsWinner = 1
+);
+SELECT COUNT(*)
+FROM franchise f
+WHERE f.NBARings >= 4;
+
 --26
 SELECT a.City, COUNT(*) AS TotalSeats
 FROM seat AS s
