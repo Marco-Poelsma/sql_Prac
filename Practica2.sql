@@ -162,6 +162,15 @@ LEFT JOIN draft_player_franchise AS dpf ON dpf.IDCardPlayer = pl.IDCard
 ORDER BY p.surname ASC, dpf.draftyear ASC
 LIMIT 1;
 
+-- 20 Retorna les franquícies que han jugat a totes les temporades regulars registrades. Ordena alfabèticament de la Z a la A. I tornaúnicament el 3 resultat.Quin és el nom del equip?
+SELECT f.*
+FROM franchise f
+JOIN franchise_season fs ON f.Name = fs.FranchiseName
+GROUP BY f.Name
+HAVING COUNT(DISTINCT fs.RegularSeasonYear) = (SELECT COUNT(DISTINCT RegularSeasonYear) FROM franchise_season)
+ORDER BY f.Name DESC
+LIMIT 1 OFFSET 2;
+
 --22
 SELECT COUNT(*) 
 FROM person AS p
