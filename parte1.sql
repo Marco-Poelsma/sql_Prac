@@ -166,6 +166,41 @@ CREATE TABLE draft_jugador_franquicia(
 
 ---------------------------------------------------
 
+-- 1. Incrementar el salario de los entrenadores principales en un 3%
+UPDATE entrenador_principal
+SET Salari = Salari * 1.03;
+
+-- Incrementar el presupuesto de la franquicia en un 5%
+UPDATE franquicia
+SET Pressupost = Pressupost * 1.05;
+
+-- 2. Añadir '%' al final del DNI de las personas a las que les falta la letra final (DNI con longitud 8)
+UPDATE persona
+SET DNI = CONCAT(DNI, '%')
+WHERE CHAR_LENGTH(DNI) = 8;
+
+-- 3. Eliminar jugadores cuyo dorsal sea NULL
+DELETE FROM jugador
+WHERE Dorsal IS NULL;
+
+-- 4. Eliminar entrenadores principales asociados a franquicias con presupuesto menor a 2 millones
+DELETE ep
+FROM entrenador_principal ep
+WHERE EXISTS (
+    SELECT 1 FROM franquicia f
+    WHERE f.DNIEntrenadorPrincipal = ep.DNI
+    AND f.Pressupost < 2000000
+);
+
+-- 5. Eliminar las gradas número 13 y sus asientos asociados
+DELETE FROM seient
+WHERE Codi IN (
+    SELECT Codi FROM grada
+    WHERE EsCoberta = 13
+);
+
+DELETE FROM grada
+WHERE EsCoberta = 13;
 
 
 
