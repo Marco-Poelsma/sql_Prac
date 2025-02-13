@@ -131,25 +131,23 @@ JOIN seat AS s ON s.ArenaName = z.ArenaName AND s.ZoneCode = z.Code
 WHERE a.Name = "Footprint Center"
 GROUP BY a.Name;
 
+--15
+SELECT p.*
+FROM person AS p
+JOIN player AS pl ON p.IDCard = pl.IDCard
+WHERE p.nationality NOT IN ('United States', 'Spain')
+ORDER BY p.nationality ASC, p.birthdate ASC
+LIMIT 3 OFFSET 2;
 
 
--- 17 Volem saber quantes franquícies hi ha per a cada conferència. Mostra totes les dades relacionades amb la conferència i un nou camp amb el recompte. Quantes franquícies hi ha acada conferència?
-
-
+-- 17
 SELECT c.*, COUNT(*) AS recuento
 FROM franchise AS f
 JOIN conference AS c ON f.ConferenceName = c.name
 GROUP BY c.name; 
 
 
-
-
-
--- 18 Sabent que molts jugadors han estat seleccionats en algun moment per les seves seleccions, retorna tots els jugadors que han estat seleccionats en l'any 2010. Inclou IDCard, Nom, Cognom, Nacionalitat, Any de selecció, en aquell mateix any i el número de samarreta en la selecció. Ordena el resultat pel numero de samarreta. Quina es al nacionalitat del primer resultat que apareix?
-
-
-
-SELECT p.IDCard, p.name, p.surname, p.Nationality, dpf.DraftYear, ntp.ShirtNumber
+-- 18 
 FROM person AS p 
 JOIN player AS pl ON pl.IDCard = p.IDCard 
 JOIN nationalteam_player AS ntp ON ntp.IDCard = pl.IDCard
@@ -181,3 +179,22 @@ GROUP BY a.City
 HAVING TotalSeats > 18000
 ORDER BY TotalSeats DESC
 LIMIT 1;
+
+--28
+
+
+--30
+SELECT COUNT(DISTINCT pl.IDCard) AS JugadorsEnSituacio
+FROM player AS pl
+JOIN player_franchise AS pf ON pl.IDCard = pf.IDCardPlayer
+JOIN draft_player_franchise AS dpf ON pl.IDCard = dpf.IDCardPlayer
+WHERE (
+    SELECT COUNT(DISTINCT pf2.FranchiseName)
+    FROM player_franchise AS pf2
+    WHERE pf2.IDCardPlayer = pl.IDCard
+) >= 2
+AND (
+    SELECT COUNT(*)
+    FROM draft_player_franchise AS dpf2
+    WHERE dpf2.IDCardPlayer = pl.IDCard
+) > 1;
