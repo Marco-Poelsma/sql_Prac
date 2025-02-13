@@ -175,7 +175,7 @@ LIMIT 1 OFFSET 2;
 SELECT ac.Especiality, COUNT(*) AS TotalEntrenadors
 FROM assistantcoach ac
 JOIN franchise f ON ac.FranchiseName = f.Name
-WHERE f.Name = 'Brooklyn Nets' WHERE f.Especiality LIKE '%Doctor%'
+WHERE f.Name = 'Brooklyn Nets' AND ac.Especiality LIKE '%Doctor%'
 GROUP BY ac.Especiality;
 
 --22
@@ -185,6 +185,11 @@ JOIN player AS pl ON p.IDCard = pl.IDCard
 JOIN draft_player_franchise AS dpf ON dpf.IDCardPlayer = pl.IDCard 
 WHERE YEAR(p.birthdate) NOT IN (SELECT DraftYear FROM draft_player_franchise WHERE DraftYear IS NOT NULL);
 
+-- 23 Quants entrenadors cobren més que qualsevol jugador?
+SELECT COUNT(*)
+FROM headcoach AS h
+JOIN person AS p ON h.IDCard = p.IDCard
+WHERE h.Salary > (SELECT MAX(pf.Salary) FROM player_franchise AS pf);
 
 --26
 SELECT a.City, COUNT(*) AS TotalSeats
