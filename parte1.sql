@@ -196,11 +196,11 @@ WHERE EXISTS (
 DELETE FROM seient
 WHERE Codi IN (
     SELECT Codi FROM grada
-    WHERE EsCoberta = 13
+    WHERE Codi = 13
 );
 
 DELETE FROM grada
-WHERE EsCoberta = 13;
+WHERE Codi = 13;
 
 
 
