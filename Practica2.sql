@@ -1,3 +1,4 @@
+
 SELECT *
 FROM question q
 WHERE q.is_solved=FALSE;
@@ -99,102 +100,18 @@ JOIN franchise_season AS fs ON fs.FranchiseName = f.Name
 WHERE fs.IsWinner = 1
 GROUP BY f.Name
 HAVING COUNT(*) >= 3; 
-
-
---13 
-SELECT pf.FranchiseName, SUM(pf.Salary) AS total_salary
-FROM player_franchise pf
-WHERE pf.FranchiseName = 'Houston Rockets'
-AND (
-    pf.StartContract <= '2007-12-31' 
-    AND pf.EndContract >= '2007-01-01'
-)
-GROUP BY pf.FranchiseName;
-
-
--- 12 Retorna amb el país i any els equips nacionals amb el nom i cognom del seu entrenador. Fes-ho pels anys del 2010 al 2015 i pels països que comencin per A. Quants entrenadors retorna la consulta? Resultado 6 
-
-
+-- 12 Retorna amb el país i any els equips nacionals amb el nom i cognom del seu entrenador. Fes-ho pels anys del 2010 al 2015 i pels països que comencin per A. Quants entrenadors retorna la consulta?
+SELECT nt.year, nt.country, p.name, p.surname
+FROM nationalteam nt
+JOIN person p ON p.IDCard = nt.IDCardHeadCoach
+WHERE nt.year BETWEEN 2010 AND 2015
+AND nt.country LIKE 'A%';
 SELECT COUNT(*)
-FROM nationalteam AS nt
-JOIN headcoach AS h ON h.IDCard = nt.IDCardHeadCoach 
-JOIN person AS p ON p.IDCard = h.IDCard 
-WHERE nt.Year BETWEEN 2010 AND 2015 AND nt.country LIKE 'A%';
+FROM nationalteam nt
+JOIN person p ON p.IDCard = nt.IDCardHeadCoach
+WHERE nt.year BETWEEN 2010 AND 2015
+  AND nt.country LIKE 'A%';
 
 
--- 14  Retorna cada arena amb la seva capacitat, juntament amb el nombre de seients que tenen. Quants seients té el Footprint Center?
 
-SELECT a.Name, a.capacity, COUNT(*)
-FROM arena AS a 
-JOIN zone AS z ON z.ArenaName = a.Name
-JOIN seat AS s ON s.ArenaName = z.ArenaName AND s.ZoneCode = z.Code
-WHERE a.Name = "Footprint Center"
-GROUP BY a.Name;
-
---15
-SELECT p.*
-FROM person AS p
-JOIN player AS pl ON p.IDCard = pl.IDCard
-WHERE p.nationality NOT IN ('United States', 'Spain')
-ORDER BY p.nationality ASC, p.birthdate ASC
-LIMIT 3 OFFSET 2;
-
-
--- 17
-SELECT c.*, COUNT(*) AS recuento
-FROM franchise AS f
-JOIN conference AS c ON f.ConferenceName = c.name
-GROUP BY c.name; 
-
-
--- 18 
-FROM person AS p 
-JOIN player AS pl ON pl.IDCard = p.IDCard 
-JOIN nationalteam_player AS ntp ON ntp.IDCard = pl.IDCard
-WHERE ntp.Year = 2010
-ORDER BY ntp.ShirtNumber ASC; 
-
---19
-SELECT p.IDCard, p.name, p.surname, dpf.*
-FROM person AS p
-JOIN player AS pl ON p.IDCard = pl.IDCard
-LEFT JOIN draft_player_franchise AS dpf ON dpf.IDCardPlayer = pl.IDCard
-ORDER BY p.surname ASC, dpf.draftyear ASC
-LIMIT 1;
-
---22
-SELECT COUNT(*) 
-FROM person AS p
-JOIN player AS pl ON p.IDCard = pl.IDCard
-JOIN draft_player_franchise AS dpf ON dpf.IDCardPlayer = pl.IDCard 
-WHERE YEAR(p.birthdate) NOT IN (SELECT DraftYear FROM draft_player_franchise WHERE DraftYear IS NOT NULL);
-
-
---26
-SELECT a.City, COUNT(*) AS TotalSeats
-FROM seat AS s
-JOIN zone AS z ON s.ArenaName = z.ArenaName AND s.ZoneCode = z.Code
-JOIN arena AS a ON z.ArenaName = a.Name
-GROUP BY a.City
-HAVING TotalSeats > 18000
-ORDER BY TotalSeats DESC
-LIMIT 1;
-
---28
-
-
---30
-SELECT COUNT(DISTINCT pl.IDCard) AS JugadorsEnSituacio
-FROM player AS pl
-JOIN player_franchise AS pf ON pl.IDCard = pf.IDCardPlayer
-JOIN draft_player_franchise AS dpf ON pl.IDCard = dpf.IDCardPlayer
-WHERE (
-    SELECT COUNT(DISTINCT pf2.FranchiseName)
-    FROM player_franchise AS pf2
-    WHERE pf2.IDCardPlayer = pl.IDCard
-) >= 2
-AND (
-    SELECT COUNT(*)
-    FROM draft_player_franchise AS dpf2
-    WHERE dpf2.IDCardPlayer = pl.IDCard
-) > 1;
+-- 20 Retorna les franquícies que han jugat a totes les temporades regulars registrades. Ordena alfabèticament de la Z a la A. I tornaúnicament el 3 resultat.Quin és el nom del equip? MARCO
