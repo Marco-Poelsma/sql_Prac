@@ -228,7 +228,17 @@ JOIN player_franchise pf ON pl.IDCard = pf.IDCardPlayer
 JOIN franchise f ON pf.FranchiseName = f.Name
 WHERE dpf.position = 1 AND fs.IsWinner = 1 AND pl.UniversityOfOrigin IS NOT NULL;
 
--- 28 Retorna els paisos amb més de 50 jugadors, 3 entrenadors i 10 assistents de paisos que tinguin selecció.
+-- 28 Retorna els paisos amb més de 50 jugadors, 3 entrenadors i 10 assistents de paisos que tinguin selecció. Quin país apareix als resultats?
+SELECT p.nationality
+FROM person AS p
+JOIN player AS pl ON p.IDCard = pl.IDCard
+JOIN headcoach AS h ON p.IDCard = h.IDCard
+JOIN assistantcoach AS ac ON p.IDCard = ac.IDCard
+JOIN nationalteam AS nt ON p.nationality = nt.country
+GROUP BY p.nationality
+HAVING COUNT(pl.IDCard) > 50
+AND COUNT(h.IDCard) > 3
+AND COUNT(ac.IDCard) > 10;
 
 
 
