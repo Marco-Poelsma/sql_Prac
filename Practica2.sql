@@ -231,6 +231,15 @@ WHERE dpf.position = 1 AND fs.IsWinner = 1 AND pl.UniversityOfOrigin IS NOT NULL
 --28
 
 
+
+-- 29 Retorna els headcoach que entrenin equips nacionals amb el salari més gran o el percentantge de victòria més petit, d'entre els que entrenen equips nacionals. Quan sumen els salaris dels entrenadors resultants?
+SELECT SUM(h.Salary)
+FROM headcoach h
+JOIN nationalteam nt ON h.IDCard = nt.IDCardHeadCoach
+WHERE h.Salary = (SELECT MAX(Salary) FROM headcoach WHERE IDCard IN (SELECT IDCardHeadCoach FROM nationalteam))
+OR h.VictoryPercentage = (SELECT MIN(VictoryPercentage) FROM headcoach WHERE IDCard IN (SELECT IDCardHeadCoach FROM nationalteam));
+
+
 --30
 SELECT COUNT(DISTINCT pl.IDCard) AS JugadorsEnSituacio
 FROM player AS pl
