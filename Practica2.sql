@@ -101,6 +101,17 @@ GROUP BY f.Name
 HAVING COUNT(*) >= 3; 
 
 
+--13 
+SELECT pf.FranchiseName, SUM(pf.Salary) AS total_salary
+FROM player_franchise pf
+WHERE pf.FranchiseName = 'Houston Rockets'
+AND (
+    pf.StartContract <= '2007-12-31' 
+    AND pf.EndContract >= '2007-01-01'
+)
+GROUP BY pf.FranchiseName;
+
+
 -- 12 Retorna amb el país i any els equips nacionals amb el nom i cognom del seu entrenador. Fes-ho pels anys del 2010 al 2015 i pels països que comencin per A. Quants entrenadors retorna la consulta? Resultado 6 
 
 
@@ -145,3 +156,12 @@ JOIN nationalteam_player AS ntp ON ntp.IDCard = pl.IDCard
 WHERE ntp.Year = 2010
 ORDER BY ntp.ShirtNumber ASC; 
 
+--26
+SELECT a.City, COUNT(*) AS TotalSeats
+FROM seat AS s
+JOIN zone AS z ON s.ArenaName = z.ArenaName AND s.ZoneCode = z.Code
+JOIN arena AS a ON z.ArenaName = a.Name
+GROUP BY a.City
+HAVING TotalSeats > 18000
+ORDER BY TotalSeats DESC
+LIMIT 1;
