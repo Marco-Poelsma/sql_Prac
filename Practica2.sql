@@ -156,6 +156,22 @@ JOIN nationalteam_player AS ntp ON ntp.IDCard = pl.IDCard
 WHERE ntp.Year = 2010
 ORDER BY ntp.ShirtNumber ASC; 
 
+--19
+SELECT p.IDCard, p.name, p.surname, dpf.*
+FROM person AS p
+JOIN player AS pl ON p.IDCard = pl.IDCard
+LEFT JOIN draft_player_franchise AS dpf ON dpf.IDCardPlayer = pl.IDCard
+ORDER BY p.surname ASC, dpf.draftyear ASC
+LIMIT 1;
+
+--22
+SELECT COUNT(*) 
+FROM person AS p
+JOIN player AS pl ON p.IDCard = pl.IDCard
+JOIN draft_player_franchise AS dpf ON dpf.IDCardPlayer = pl.IDCard 
+WHERE YEAR(p.birthdate) NOT IN (SELECT DraftYear FROM draft_player_franchise WHERE DraftYear IS NOT NULL);
+
+
 --26
 SELECT a.City, COUNT(*) AS TotalSeats
 FROM seat AS s
