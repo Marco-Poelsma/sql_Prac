@@ -228,7 +228,9 @@ JOIN player_franchise pf ON pl.IDCard = pf.IDCardPlayer
 JOIN franchise f ON pf.FranchiseName = f.Name
 WHERE dpf.position = 1 AND fs.IsWinner = 1 AND pl.UniversityOfOrigin IS NOT NULL;
 
---28
+-- 28 Retorna els paisos amb més de 50 jugadors, 3 entrenadors i 10 assistents de paisos que tinguin selecció.
+
+
 
 
 
