@@ -202,6 +202,13 @@ SELECT COUNT(*)
 FROM franchise f
 WHERE f.NBARings >= 4;
 
+-- 25 Troba el nom de la franquícia amb el valor de budget més petit.
+SELECT f.Name
+FROM franchise f
+ORDER BY f.Budget
+LIMIT 1;
+
+
 --26
 SELECT a.City, COUNT(*) AS TotalSeats
 FROM seat AS s
