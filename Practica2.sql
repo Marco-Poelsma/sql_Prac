@@ -219,6 +219,15 @@ HAVING TotalSeats > 18000
 ORDER BY TotalSeats DESC
 LIMIT 1;
 
+-- 27 Retorna la ID del jugador i el nom de la seva franquicia que han quedat primers al draft i al mateix any d'aquest han gunayat la temporada regular. Retorna la ID de l'únic que te Universitat d'origen.
+SELECT dpf.IDCardPlayer, f.Name
+FROM draft_player_franchise dpf
+JOIN franchise_season fs ON dpf.DraftYear = fs.RegularSeasonYear AND dpf.FranchiseName = fs.FranchiseName
+JOIN player pl ON dpf.IDCardPlayer = pl.IDCard
+JOIN player_franchise pf ON pl.IDCard = pf.IDCardPlayer
+JOIN franchise f ON pf.FranchiseName = f.Name
+WHERE dpf.position = 1 AND fs.IsWinner = 1 AND pl.UniversityOfOrigin IS NOT NULL;
+
 --28
 
 
