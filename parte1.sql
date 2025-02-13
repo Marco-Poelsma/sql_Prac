@@ -408,39 +408,3 @@ WHERE Codi IN (
 
 DELETE FROM grada
 WHERE Codi = 13;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
