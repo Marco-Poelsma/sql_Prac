@@ -171,6 +171,13 @@ HAVING COUNT(DISTINCT fs.RegularSeasonYear) = (SELECT COUNT(DISTINCT RegularSeas
 ORDER BY f.Name DESC
 LIMIT 1 OFFSET 2;
 
+-- 21 Per cada especialitat d'entrenadors assistents, retorna quants n'ha tingut cada franquícia. Qunatsmetges tenen els Brooklin Nets?
+SELECT ac.Especiality, COUNT(*) AS TotalEntrenadors
+FROM assistantcoach ac
+JOIN franchise f ON ac.FranchiseName = f.Name
+WHERE f.Name = 'Brooklyn Nets' WHERE f.Especiality LIKE '%Doctor%'
+GROUP BY ac.Especiality;
+
 --22
 SELECT COUNT(*) 
 FROM person AS p
