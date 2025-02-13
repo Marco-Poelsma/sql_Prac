@@ -187,7 +187,7 @@ WHERE Dorsal IS NULL;
 DELETE ep
 FROM entrenador_principal ep
 WHERE EXISTS (
-    SELECT 1 FROM franquicia f
+    SELECT * FROM franquicia f
     WHERE f.DNIEntrenadorPrincipal = ep.DNI
     AND f.Pressupost < 2000000
 );
