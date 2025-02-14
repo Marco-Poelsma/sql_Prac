@@ -1,7 +1,9 @@
 SELECT *
 FROM question q
 WHERE q.is_solved=FALSE;
---Pregunta 1: Quants estadis hi ha? ERIK
+
+
+--Pregunta 1: Quants estadis hi ha? 
 
 SELECT COUNT(*) 
 FROM arena AS a; 
@@ -17,7 +19,8 @@ FROM person p
 JOIN franquicia f ON p.idcard = f.idcardcoach
 WHERE f.name = 'Utah Jazz';
 
--- 3 Troba el nom de la franquícia amb el pressupost més gran. MARCO
+-- 3 Troba el nom de la franquícia amb el pressupost més gran. 
+
 SELECT f.name FROM franchise f ORDER BY f.budget DESC LIMIT 1;
 
 
@@ -47,13 +50,26 @@ WHERE dpf.position IN (1,2,3) AND DraftYear = 2020
 ORDER BY p.surname DESC LIMIT 1;
 
 
--- 6
+-- 6 Recupera els noms dels jugadors que tenen una data de naixement anterior al març de 1980. Quin és el nom del jugador de cognom Lue que apareix als primers resultats?
+
+
 SELECT p.Name
 FROM person p
 JOIN player pl ON p.IDCard  = pl.IDCard 
 WHERE p.BirthDate <= '1980-03-01' AND p.Surname = 'Lue'
 ORDER BY p.BirthDate DESC
 LIMIT 1;
+
+-- 7  Per cada arena, digues el nombre de seients VIP que hi ha. Quants en te el Madison Square Garden?
+
+
+SELECT a.Name, COUNT(s.number) AS VIPSeats
+FROM zone AS z
+JOIN arena AS a ON z.ArenaName = a.Name
+JOIN seat AS s ON z.ArenaName = s.ArenaName AND z.Code = s.ZoneCode
+WHERE z.IsVip = 1
+GROUP BY a.Name;
+
 
 
 -- 8 Tenim guardat els colors dels seients de tots els estadis. Retorna quants seients blaus hi ha en total.
@@ -66,7 +82,7 @@ WHERE Color = 'blue';
 
 -- 9 Retorna la mitjana de seients (arrodonint sense decimals) per color d’entre tots els estadis. Quina es la mitjana dels platejats? 
 
-SELECT s.Color, ROUND(COUNT(*) / COUNT(DISTINCT s.ArenaName)) AS average_seats
+SELECT s.Color, ROUND(COUNT(*) / COUNT(DISTINCT s.ArenaName)) AS asientos_media
 FROM seat AS s
 GROUP BY s.Color;
 
@@ -101,7 +117,8 @@ JOIN person AS p ON p.IDCard = h.IDCard
 WHERE nt.Year BETWEEN 2010 AND 2015 AND nt.country LIKE 'A%';
 
 
---13 
+--13  Per un any específic retorna per cada equip la suma dels salaris dels seus jugadors. Asumeix que tots els jugadors que tenen un contracte en qualsevol data de l'any 2007 s'ha de contabilitzar. Quin és el presupost dels Houston Rockets?
+
 
 SELECT pf.FranchiseName, SUM(pf.Salary) AS total_salary
 FROM player_franchise pf
@@ -115,6 +132,7 @@ GROUP BY pf.FranchiseName;
 
 
 
+
 -- 14  Retorna cada arena amb la seva capacitat, juntament amb el nombre de seients que tenen. Quants seients té el Footprint Center?
 
 SELECT a.Name, a.capacity, COUNT(*)
@@ -123,7 +141,11 @@ JOIN zone AS z ON z.ArenaName = a.Name
 JOIN seat AS s ON s.ArenaName = z.ArenaName AND s.ZoneCode = z.Code
 GROUP BY a.Name;
 
---15
+
+
+--15 Crea un informe amb tots els jugadors que no son dels Estats Units ni d'Espanya. Inclou-ne tota la seva informació personal completa. Ordena els resultats per nacionalitat i data de naixement ascendent. Quina és la ID del terncer juador retornat?
+
+
 SELECT p.*
 FROM person AS p
 JOIN player AS pl ON p.IDCard = pl.IDCard
@@ -131,16 +153,18 @@ WHERE p.nationality NOT IN ('United States', 'Spain')
 ORDER BY p.nationality ASC, p.birthdate ASC
 LIMIT 3 OFFSET 2;
 
+
 -- 16 Mostra un informe amb el nom, cognom i data de naixement de tots els caps d'entrenadors assistents de l'especialitat de psicologia sense repetits i que tenen una data de naixement registrada. Ordena per cognom i nom. Quin és l'any de naixement del tercer resultat?
 
 
-SELECT DISTINCT YEAR(p.birthdate), p.name, p.surname
+SELECT DISTINCT p.IDCard, p.Name, p.Surname, p.BirthDate
 FROM person p
 JOIN assistantcoach a ON p.IDCard = a.IDCard
-WHERE p.birthdate IS NOT NULL AND a.Especiality LIKE '%Psychologist'
-GROUP BY p.name, p.surname, p.birthdate
-ORDER BY p.name, p.surname
-LIMIT 1 OFFSET 2;
+WHERE a.IDCard IN (SELECT DISTINCT IDCardBoss FROM assistantcoach WHERE IDCardBoss IS NOT NULL)
+AND p.BirthDate IS NOT NULL
+AND a.Especiality = 'Psychologist'  
+ORDER BY p.Surname, p.Name;
+
 
 
 -- 17 Volem saber quantes franquícies hi ha per a cada conferència. Mostra totes les dades relacionades amb la conferència i un nou camp amb el recompte. Quantes franquícies hi ha acada conferència?
@@ -165,7 +189,8 @@ WHERE ntp.Year = 2010
 ORDER BY ntp.ShirtNumber ASC; 
 
 
---19
+--19 Retorna el ID, nom i cognom dels jugadors i les dades del seu draft si es que en tenen. Ordena per cognom i any de draft. Quina es la ID del primer resultat?
+
 
 
 SELECT p.IDCard, p.name, p.surname, dpf.*
@@ -174,6 +199,7 @@ JOIN player AS pl ON p.IDCard = pl.IDCard
 LEFT JOIN draft_player_franchise AS dpf ON dpf.IDCardPlayer = pl.IDCard
 ORDER BY p.surname ASC, dpf.draftyear ASC
 LIMIT 1;
+
 
 -- 20 Retorna les franquícies que han jugat a totes les temporades regulars registrades. Ordena alfabèticament de la Z a la A. I tornaúnicament el 3 resultat.Quin és el nom del equip?
 SELECT f.Name
@@ -199,18 +225,15 @@ JOIN franchise f ON ac.FranchiseName = f.Name
 WHERE f.Name = 'Brooklyn Nets' AND ac.Especiality LIKE '%Doctor%'
 GROUP BY ac.Especiality;
 
-INSERT INTO answer (IDquestion, answer_value, sql_query_used)
-VALUES (21, '5', 'SELECT ac.Especiality, COUNT(*) AS TotalEntrenadors
-FROM assistantcoach ac
-JOIN franchise f ON ac.FranchiseName = f.Name
-WHERE f.Name = 'Brooklyn Nets' AND ac.Especiality LIKE '%Doctor%'
-GROUP BY ac.Especiality;');
---22
+
+-- 22 Troba quantes persones han nascut en un any en el qual no hi ha registrat un draft
+
+
 SELECT COUNT(*) 
-FROM person AS p
-JOIN player AS pl ON p.IDCard = pl.IDCard
-JOIN draft_player_franchise AS dpf ON dpf.IDCardPlayer = pl.IDCard 
-WHERE YEAR(p.birthdate) NOT IN (SELECT DraftYear FROM draft_player_franchise WHERE DraftYear IS NOT NULL);
+FROM person Pe
+WHERE NOT EXISTS ( SELECT Year FROM draft D WHERE YEAR(Pe.birthDate) = D.Year)
+AND YEAR(Pe.BirthDate) IS NOT NULL ORDER BY Pe.IDCard;
+
 
 -- 23 Quants entrenadors cobren més que qualsevol jugador?
 SELECT COUNT(*)
@@ -236,7 +259,10 @@ ORDER BY f.Budget
 LIMIT 1;
 
 
---26
+--26 Troba la ciutat de l'arena que tingui més seients sempre i quan siguin més de 18000 (veure taules seat i arena, NO utilitzar Capacity)
+
+
+
 SELECT a.City, COUNT(*) AS TotalSeats
 FROM seat AS s
 JOIN zone AS z ON s.ArenaName = z.ArenaName AND s.ZoneCode = z.Code
@@ -246,16 +272,22 @@ HAVING TotalSeats > 18000
 ORDER BY TotalSeats DESC
 LIMIT 1;
 
--- 27 Retorna la ID del jugador i el nom de la seva franquicia que han quedat primers al draft i al mateix any d'aquest han gunayat la temporada regular. Retorna la ID de l'únic que te Universitat d'origen.
-SELECT dpf.IDCardPlayer, f.Name
-FROM draft_player_franchise dpf
-JOIN franchise_season fs ON dpf.DraftYear = fs.RegularSeasonYear AND dpf.FranchiseName = fs.FranchiseName
-JOIN player pl ON dpf.IDCardPlayer = pl.IDCard
-JOIN player_franchise pf ON pl.IDCard = pf.IDCardPlayer
-JOIN franchise f ON pf.FranchiseName = f.Name
-WHERE dpf.position = 1 AND fs.IsWinner = 1 AND pl.UniversityOfOrigin IS NOT NULL;
+
+-- 27 Retorna la ID del jugador i el nom de la seva franquicia que han quedat primers al draft i al mateix any d'aquest han gunayat la temporada regular. Retorna la ID de l'únic que te Universitat d'origen.iD  100012078
+
+SELECT pf.IDCardPlayer, pf.FranchiseName
+FROM draft_player_franchise d
+JOIN player p ON p.IDCard = d.IDCardPlayer
+JOIN player_franchise pf ON pf.IDCardPlayer = p.IDCard 
+JOIN franchise f ON f.Name = pf.FranchiseName 
+JOIN franchise_season fs ON fs.FranchiseName = pf.FranchiseName 
+AND d.DraftYear = fs.RegularSeasonYear
+WHERE fs.IsWinner = 1 AND d.Position = 1 AND p.UniversityOfOrigin IS NOT NULL;
+
 
 -- 28 Retorna els paisos amb més de 50 jugadors, 3 entrenadors i 10 assistents de paisos que tinguin selecció. Quin país apareix als resultats?
+
+
 SELECT p.nationality
 FROM person AS p
 JOIN player AS pl ON p.IDCard = pl.IDCard
@@ -263,15 +295,17 @@ JOIN headcoach AS h ON p.IDCard = h.IDCard
 JOIN assistantcoach AS ac ON p.IDCard = ac.IDCard
 JOIN nationalteam AS nt ON p.nationality = nt.country
 GROUP BY p.nationality
-HAVING COUNT(pl.IDCard) > 50
-AND COUNT(h.IDCard) > 3
-AND COUNT(ac.IDCard) > 10;
+HAVING COUNT(pl.IDCard) > 50 
+   AND COUNT(h.IDCard) > 3 
+   AND COUNT(ac.IDCard) > 10;
+
 
 
 
 
 
 -- 29 Retorna els headcoach que entrenin equips nacionals amb el salari més gran o el percentantge de victòria més petit, d'entre els que entrenen equips nacionals. Quan sumen els salaris dels entrenadors resultants?
+
 SELECT SUM(h.Salary)
 FROM headcoach h
 JOIN nationalteam nt ON h.IDCard = nt.IDCardHeadCoach
@@ -280,12 +314,27 @@ OR h.VictoryPercentage = (SELECT MIN(VictoryPercentage) FROM headcoach WHERE IDC
 
 
 -- 30 Retorna els jugadors que han jugat en 2 equips o més i han estat convocats també a la selecció més d'un cop. Quants jugadors hi ha en aquesta situació?
-SELECT COUNT(DISTINCT pl.IDCard)
-FROM player AS pl
-JOIN player_franchise AS pf ON pl.IDCard = pf.IDCardPlayer
-JOIN nationalteam_player AS ntp ON pl.IDCard = ntp.IDCard
-GROUP BY pl.IDCard
-HAVING COUNT(DISTINCT pf.FranchiseName) >= 2 AND COUNT(ntp.IDCard) > 1;
+
+
+SELECT COUNT(*) AS NumJugadores
+FROM (
+    SELECT P.IDCard
+    FROM player P
+    JOIN player_franchise PF ON P.IDCard = PF.IDCardPlayer
+    JOIN nationalteam_player NP ON P.IDCard = NP.IDCard
+    GROUP BY P.IDCard
+    HAVING COUNT(DISTINCT PF.FranchiseName) >= 2
+       AND COUNT(DISTINCT NP.Year) > 1
+) AS EligiblePlayers;
+
+
+-- 1301 Quina és la mitja del salary dels jugadors per any? (Agafa l'any que han començat els seus contractes per fer les mitjes i arrodoneix el resultat a 2 decimals). Quin és el valor resultant dels decimals de l'any 2009?
+
+
+SELECT YEAR(pf.StartContract) AS Año, ROUND(AVG(pf.Salary),2) AS Media
+FROM player_franchise AS pf 
+GROUP BY YEAR(pf.StartContract)
+ORDER BY YEAR(pf.StartContract) ASC;
 
 -- 1401 En quin estadi la capacitat excedeit en mes de 50 el nombre de seients?
 SELECT a.Name
@@ -307,6 +356,18 @@ SELECT nt.Country
 FROM nationalteam nt
 GROUP BY nt.Country
 HAVING COUNT(DISTINCT nt.Year) = (SELECT COUNT(DISTINCT Year) FROM nationalteam);
+
+
+-- 2301 Sobre el llistat d'entrenadors que cobren més que qualsevol jugador, troba el cognom del 6é ordenat alfabeticament pel cognom.
+
+
+SELECT p.Name, p.Surname 
+FROM person AS p
+JOIN headcoach AS h ON h.IDCard = p.IDCard
+WHERE h.Salary > (SELECT MAX(pf2.salary) FROM player_franchise AS pf2 )
+ORDER BY p.Surname ASC
+LIMIT 1 OFFSET 5;
+
 
 
 -- 2401 Omple la columna NBARings de la taula de jugadors. Un jugador ha de tenir tants NBARings com els que tingui els equips als que ha jugat, sempre i quan aquest tingui un contracte en actiu durant aquella temporada. Utilitza una declaració UPDATE. Quin és la ID del jugador amb més NBARings?
