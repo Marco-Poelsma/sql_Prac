@@ -300,3 +300,28 @@ FROM arena AS a
 JOIN franchise AS f ON a.Name = f.ArenaName
 JOIN conference AS c ON f.ConferenceName = c.Name
 WHERE c.Name = 'Western Conference';
+
+
+-- 2001 Retorna els equips nacionals que han jugat a tots els anys on en tenim de registrats. Quants equips surten?
+SELECT nt.Country
+FROM nationalteam nt
+GROUP BY nt.Country
+HAVING COUNT(DISTINCT nt.Year) = (SELECT COUNT(DISTINCT Year) FROM nationalteam);
+
+
+-- 2401 Omple la columna NBARings de la taula de jugadors. Un jugador ha de tenir tants NBARings com els que tingui els equips als que ha jugat, sempre i quan aquest tingui un contracte en actiu durant aquella temporada. Utilitza una declaració UPDATE. Quin és la ID del jugador amb més NBARings?
+
+UPDATE player AS pl
+SET NBARings = (
+    SELECT SUM(f.NBARings)
+    FROM player_franchise AS pf
+    JOIN franchise AS f ON pf.FranchiseName = f.Name
+    WHERE pf.IDCardPlayer = pl.IDCard
+    AND pf.StartContract <= f.SeasonEnd
+    AND pf.EndContract >= f.SeasonStart
+);
+
+SELECT IDCard
+FROM player
+ORDER BY NBARings DESC
+LIMIT 1;
