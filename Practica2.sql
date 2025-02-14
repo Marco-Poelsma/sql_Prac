@@ -286,3 +286,10 @@ JOIN player_franchise AS pf ON pl.IDCard = pf.IDCardPlayer
 JOIN nationalteam_player AS ntp ON pl.IDCard = ntp.IDCard
 GROUP BY pl.IDCard
 HAVING COUNT(DISTINCT pf.FranchiseName) >= 2 AND COUNT(ntp.IDCard) > 1;
+
+-- 1401 En quin estadi la capacitat excedeit en mes de 50 el nombre de seients?
+SELECT a.Name
+FROM arena AS a
+JOIN seat AS s ON a.Name = s.ArenaName
+GROUP BY a.Name, a.capacity
+HAVING a.capacity > COUNT(*) + 50;
