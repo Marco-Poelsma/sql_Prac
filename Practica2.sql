@@ -140,7 +140,7 @@ ORDER BY p.nationality ASC, p.birthdate ASC
 LIMIT 3 OFFSET 2;
 
 -- 16 Mostra un informe amb el nom, cognom i data de naixement de tots els caps d'entrenadors assistents de l'especialitat de psicologia sense repetits i que tenen una data de naixement registrada. Ordena per cognom i nom. Quin és l'any de naixement del tercer resultat?
-SELECT DISTINCT YEAR(p.birthdate)
+SELECT DISTINCT YEAR(p.birthdate), p.name, p.surname
 FROM person p
 JOIN assistantcoach a ON p.IDCard = a.IDCard
 WHERE p.birthdate IS NOT NULL AND a.Especiality LIKE '%Psychologist'
