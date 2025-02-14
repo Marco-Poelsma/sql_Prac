@@ -6,6 +6,7 @@ WHERE q.is_solved=FALSE;
 SELECT COUNT(*) 
 FROM arena AS a; 
 
+
 -- 2
 SELECT p.name, p.surname
 FROM person p
@@ -23,11 +24,6 @@ SELECT f.name FROM franchise f ORDER BY f.budget DESC LIMIT 1;
 
 -- 4 Llista les arenes (noms i ciutats) de les franquícies de la conferència oest. Quin és el nom de la 5a ciutat? ERIK
 
-SELECT a.name, a.city
-FROM arena AS a 
-JOIN franchise AS f ON a.name = f.ArenaName
-JOIN conference AS c ON c.name = f.ConferenceName
-WHERE c.name = 'Western Conference';
 
 SELECT a.city 
 FROM arena AS a 
@@ -42,12 +38,6 @@ ORDER BY a.city LIMIT 1 OFFSET 4;
 -- Quin és el nom del jugador mostrat en la primera fila
 
 
-INSERT INTO answer (IDquestion, answer_value, sql_query_used) VALUES ('5', 'Evan', 'SELECT p.name, p. surname
-FROM person AS p 
-JOIN player AS pl ON p.IDCard = pl.IDCard 
-JOIN draft_player_franchise AS dpf ON dpf.IDCardPlayer = pl.IDCard
-WHERE dpf.position IN (1,2,3) AND DraftYear = 2020
-ORDER BY p.surname DESC LIMIT 1;');
 
 SELECT p.name, p. surname
 FROM person AS p 
@@ -68,9 +58,6 @@ LIMIT 1;
 
 -- 8 Tenim guardat els colors dels seients de tots els estadis. Retorna quants seients blaus hi ha en total.
 
-INSERT INTO answer (IDquestion, answer_value, sql_query_used) VALUES ('8', '36402', 'SELECT COUNT(*) 
-FROM seat AS s 
-WHERE Color = 'blue'');
 
 SELECT COUNT(*) 
 FROM seat AS s 
@@ -89,7 +76,8 @@ GROUP BY s.Color;
 SELECT p.Name, ROUND((VictoryPercentage / 100) * (Salary / 1000)) AS Rendimiento 
 FROM person AS p 
 JOIN headcoach AS h ON p.IDCard = h.IDCard 
-WHERE h.IDCard = 100000004;
+WHERE h.IDCard = 100000004; 
+
 
 -- 11 Per cada equip retorna quantes vegades ha guanyat. Sempre que siguin 3 vegades o més. Quantes files retorna el select?
 
@@ -101,7 +89,20 @@ GROUP BY f.Name
 HAVING COUNT(*) >= 3; 
 
 
+-- 12 Retorna amb el país i any els equips nacionals amb el nom i cognom del seu entrenador. Fes-ho pels anys del 2010 al 2015 i pels països que comencin per A. Quants entrenadors retorna la consulta? Resultado 6 
+
+
+
+
+SELECT nt.Country, nt.Year, p.Name, p.Surname
+FROM nationalteam AS nt
+JOIN headcoach AS h ON h.IDCard = nt.IDCardHeadCoach 
+JOIN person AS p ON p.IDCard = h.IDCard 
+WHERE nt.Year BETWEEN 2010 AND 2015 AND nt.country LIKE 'A%';
+
+
 --13 
+
 SELECT pf.FranchiseName, SUM(pf.Salary) AS total_salary
 FROM player_franchise pf
 WHERE pf.FranchiseName = 'Houston Rockets'
@@ -112,14 +113,6 @@ AND (
 GROUP BY pf.FranchiseName;
 
 
--- 12 Retorna amb el país i any els equips nacionals amb el nom i cognom del seu entrenador. Fes-ho pels anys del 2010 al 2015 i pels països que comencin per A. Quants entrenadors retorna la consulta? Resultado 6 
-
-
-SELECT COUNT(*)
-FROM nationalteam AS nt
-JOIN headcoach AS h ON h.IDCard = nt.IDCardHeadCoach 
-JOIN person AS p ON p.IDCard = h.IDCard 
-WHERE nt.Year BETWEEN 2010 AND 2015 AND nt.country LIKE 'A%';
 
 
 -- 14  Retorna cada arena amb la seva capacitat, juntament amb el nombre de seients que tenen. Quants seients té el Footprint Center?
@@ -128,7 +121,6 @@ SELECT a.Name, a.capacity, COUNT(*)
 FROM arena AS a 
 JOIN zone AS z ON z.ArenaName = a.Name
 JOIN seat AS s ON s.ArenaName = z.ArenaName AND s.ZoneCode = z.Code
-WHERE a.Name = "Footprint Center"
 GROUP BY a.Name;
 
 --15
@@ -140,6 +132,8 @@ ORDER BY p.nationality ASC, p.birthdate ASC
 LIMIT 3 OFFSET 2;
 
 -- 16 Mostra un informe amb el nom, cognom i data de naixement de tots els caps d'entrenadors assistents de l'especialitat de psicologia sense repetits i que tenen una data de naixement registrada. Ordena per cognom i nom. Quin és l'any de naixement del tercer resultat?
+
+
 SELECT DISTINCT YEAR(p.birthdate), p.name, p.surname
 FROM person p
 JOIN assistantcoach a ON p.IDCard = a.IDCard
@@ -148,21 +142,32 @@ GROUP BY p.name, p.surname, p.birthdate
 ORDER BY p.name, p.surname
 LIMIT 1 OFFSET 2;
 
--- 17
-SELECT c.*, COUNT(*) AS recuento
+
+-- 17 Volem saber quantes franquícies hi ha per a cada conferència. Mostra totes les dades relacionades amb la conferència i un nou camp amb el recompte. Quantes franquícies hi ha acada conferència?
+
+
+SELECT c.Name, COUNT(f.NameFranchise) AS recuento
 FROM franchise AS f
 JOIN conference AS c ON f.ConferenceName = c.name
 GROUP BY c.name; 
 
 
--- 18 
+-- 18 Sabent que molts jugadors han estat seleccionats en algun moment per les seves seleccions, retorna tots els jugadors que han estat seleccionats en l'any 2010. Inclou IDCard, Nom, Cognom, Nacionalitat, Any de selecció, en aquell mateix any i el número de samarreta en la selecció. Ordena el resultat pel numero de samarreta. Quina es al nacionalitat del primer resultat que apareix?
+
+
+
+SELECT p.IDCard, p.name, p.surname, p.Nationality, dpf.DraftYear, ntp.ShirtNumber
 FROM person AS p 
 JOIN player AS pl ON pl.IDCard = p.IDCard 
 JOIN nationalteam_player AS ntp ON ntp.IDCard = pl.IDCard
+JOIN draft_player_franchise AS dpf ON dpf.IDCardPlayer = ntp.IDCard 
 WHERE ntp.Year = 2010
 ORDER BY ntp.ShirtNumber ASC; 
 
+
 --19
+
+
 SELECT p.IDCard, p.name, p.surname, dpf.*
 FROM person AS p
 JOIN player AS pl ON p.IDCard = pl.IDCard
