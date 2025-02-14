@@ -293,3 +293,10 @@ FROM arena AS a
 JOIN seat AS s ON a.Name = s.ArenaName
 GROUP BY a.Name, a.capacity
 HAVING a.capacity > COUNT(*) + 50;
+
+-- 1701 Quants estadis tenim a la conferència oest?
+SELECT COUNT(DISTINCT a.Name)
+FROM arena AS a
+JOIN franchise AS f ON a.Name = f.ArenaName
+JOIN conference AS c ON f.ConferenceName = c.Name
+WHERE c.Name = 'Western Conference';
