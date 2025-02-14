@@ -139,6 +139,14 @@ WHERE p.nationality NOT IN ('United States', 'Spain')
 ORDER BY p.nationality ASC, p.birthdate ASC
 LIMIT 3 OFFSET 2;
 
+-- 16 Mostra un informe amb el nom, cognom i data de naixement de tots els caps d'entrenadors assistents de l'especialitat de psicologia sense repetits i que tenen una data de naixement registrada. Ordena per cognom i nom. Quin és l'any de naixement del tercer resultat?
+SELECT DISTINCT YEAR(p.birthdate)
+FROM person p
+JOIN assistantcoach a ON p.IDCard = a.IDCard
+WHERE p.birthdate IS NOT NULL AND a.Especiality LIKE '%Psychologist'
+GROUP BY p.name, p.surname, p.birthdate
+ORDER BY p.name, p.surname
+LIMIT 1 OFFSET 2;
 
 -- 17
 SELECT c.*, COUNT(*) AS recuento
@@ -163,13 +171,21 @@ ORDER BY p.surname ASC, dpf.draftyear ASC
 LIMIT 1;
 
 -- 20 Retorna les franquícies que han jugat a totes les temporades regulars registrades. Ordena alfabèticament de la Z a la A. I tornaúnicament el 3 resultat.Quin és el nom del equip?
-SELECT f.*
+SELECT f.Name
 FROM franchise f
 JOIN franchise_season fs ON f.Name = fs.FranchiseName
 GROUP BY f.Name
 HAVING COUNT(DISTINCT fs.RegularSeasonYear) = (SELECT COUNT(DISTINCT RegularSeasonYear) FROM franchise_season)
 ORDER BY f.Name DESC
 LIMIT 1 OFFSET 2;
+INSERT INTO answer (IDquestion, answer_value, sql_query_used)
+VALUES (20, "Toronto Raptors", "SELECT f.Name
+FROM franchise f
+JOIN franchise_season fs ON f.Name = fs.FranchiseName
+GROUP BY f.Name
+HAVING COUNT(DISTINCT fs.RegularSeasonYear) = (SELECT COUNT(DISTINCT RegularSeasonYear) FROM franchise_season)
+ORDER BY f.Name DESC
+LIMIT 1 OFFSET 2;")
 
 -- 21 Per cada especialitat d'entrenadors assistents, retorna quants n'ha tingut cada franquícia. Qunatsmetges tenen els Brooklin Nets?
 SELECT ac.Especiality, COUNT(*) AS TotalEntrenadors
@@ -178,6 +194,12 @@ JOIN franchise f ON ac.FranchiseName = f.Name
 WHERE f.Name = 'Brooklyn Nets' AND ac.Especiality LIKE '%Doctor%'
 GROUP BY ac.Especiality;
 
+INSERT INTO answer (IDquestion, answer_value, sql_query_used)
+VALUES (21, '5', 'SELECT ac.Especiality, COUNT(*) AS TotalEntrenadors
+FROM assistantcoach ac
+JOIN franchise f ON ac.FranchiseName = f.Name
+WHERE f.Name = 'Brooklyn Nets' AND ac.Especiality LIKE '%Doctor%'
+GROUP BY ac.Especiality;');
 --22
 SELECT COUNT(*) 
 FROM person AS p
@@ -252,18 +274,10 @@ WHERE h.Salary = (SELECT MAX(Salary) FROM headcoach WHERE IDCard IN (SELECT IDCa
 OR h.VictoryPercentage = (SELECT MIN(VictoryPercentage) FROM headcoach WHERE IDCard IN (SELECT IDCardHeadCoach FROM nationalteam));
 
 
---30
-SELECT COUNT(DISTINCT pl.IDCard) AS JugadorsEnSituacio
+-- 30 Retorna els jugadors que han jugat en 2 equips o més i han estat convocats també a la selecció més d'un cop. Quants jugadors hi ha en aquesta situació?
+SELECT COUNT(DISTINCT pl.IDCard)
 FROM player AS pl
 JOIN player_franchise AS pf ON pl.IDCard = pf.IDCardPlayer
-JOIN draft_player_franchise AS dpf ON pl.IDCard = dpf.IDCardPlayer
-WHERE (
-    SELECT COUNT(DISTINCT pf2.FranchiseName)
-    FROM player_franchise AS pf2
-    WHERE pf2.IDCardPlayer = pl.IDCard
-) >= 2
-AND (
-    SELECT COUNT(*)
-    FROM draft_player_franchise AS dpf2
-    WHERE dpf2.IDCardPlayer = pl.IDCard
-) > 1;
+JOIN nationalteam_player AS ntp ON pl.IDCard = ntp.IDCard
+GROUP BY pl.IDCard
+HAVING COUNT(DISTINCT pf.FranchiseName) >= 2 AND COUNT(ntp.IDCard) > 1;
